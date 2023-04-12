@@ -25,7 +25,7 @@ def max_AWG(coreSize, numTurns):
         200: {14: 53, 16: 67, 18: 86, 20: 108, 22: 137, 24: 172, 26: 217, 28: 270, 30: 338, 32: 418, 34: 529, 36: 658}
     }
     max_turns_for_core = maxTurns[coreSize]
-    for wire_size in range(14, 36, 2):
+    for wire_size in range(14, 36+1, 2):
         if max_turns_for_core[wire_size] >= numTurns:
             return wire_size
     return None
