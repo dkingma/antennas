@@ -1,3 +1,12 @@
+# freqperturn.py
+# Dave Kingma
+#
+# This program assumes an Amitron T50-6 core is used (Al = 46), and given a whip length of A (ft), a distance of the
+# loading coil from the bottom of the whip B, and a whip diameter of D (in). For every turn on the core,
+# it calculates the resonant frequency (MHz), the inductance of the toroid L (uH), and the maximum diameter
+# wire that can be used to make that number of turns such that the turns do not take up more than 300 degrees
+# of the circumference of the toroid core.
+
 import math
 
 A = 3.875
@@ -5,9 +14,8 @@ A = 3.875
 B = 0
 D = 0.237
 #D = 0.24
-f = 14.0
 Al = 46
-coreSize = 200
+coreSize = 50
 
 maxTurns = {
     12:  {14: 0, 16: 0, 18: 0, 20: 0, 22: 1, 24: 3, 26: 5, 28: 8, 30: 11, 32: 15, 34: 20, 36: 26},
@@ -49,7 +57,7 @@ def find_max_AWG(coreSize, numTurns, maxTurns):
     return None
 
 maxTurnsCore = maxTurns[coreSize][36]
-print("Turns, Frequency (MHz), L (uH), T-12, T-16, T-25, T-37, T-50, T-68, T-80, T-94, T-106, T-130, T-157, T-184, T-200")
+print("Turns, Frequency (MHz), L (uH), Max Wire Dia. (AWG)")
 for N in range(1, maxTurnsCore, 1):
     targetL = calcLGivenN(N, Al)
     lowestError = 1000 # high enough number to start with
@@ -63,22 +71,7 @@ for N in range(1, maxTurnsCore, 1):
         if abs(targetL - L) < lowestError:
             lowestError = abs(targetL - L)
             resonantFrequency = f
-    # maxWireAWG = find_max_AWG(coreSize, N, maxTurns)
-    # if maxWireAWG == None:
-    #     break
-    maxT12 = find_max_AWG(12, N, maxTurns)
-    maxT16 = find_max_AWG(16, N, maxTurns)
-    maxT25 = find_max_AWG(25, N, maxTurns)
-    maxT37 = find_max_AWG(37, N, maxTurns)
+    
     maxT50 = find_max_AWG(50, N, maxTurns)
-    maxT68 = find_max_AWG(68, N, maxTurns)
-    maxT80 = find_max_AWG(80, N, maxTurns)
-    maxT94 = find_max_AWG(94, N, maxTurns)
-    maxT106 = find_max_AWG(106, N, maxTurns)
-    maxT130 = find_max_AWG(130, N, maxTurns)
-    maxT157 = find_max_AWG(157, N, maxTurns)
-    maxT184 = find_max_AWG(184, N, maxTurns)
-    maxT200 = find_max_AWG(200, N, maxTurns)
-    print(f"{N}, {resonantFrequency:.3f}, {targetL:.3f}, {maxT12}, {maxT16}, {maxT25}, {maxT37}, {maxT50}, {maxT68}, {maxT80}, {maxT94}, {maxT106}, {maxT130}, {maxT157}, {maxT184}, {maxT200}")
-        
 
+    print(f"{N}, {resonantFrequency:.3f}, {targetL:.3f}, {maxT50}")
