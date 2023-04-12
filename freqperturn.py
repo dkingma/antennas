@@ -51,7 +51,7 @@ def calcLGivenN(N, Al):
 
 def find_max_AWG(coreSize, numTurns, maxTurns):
     max_turns_for_core = maxTurns[coreSize]
-    for wire_size in range(14, 36, 2):
+    for wire_size in range(14, 36+1, 2):
         if max_turns_for_core[wire_size] >= numTurns:
             return wire_size
     return None
