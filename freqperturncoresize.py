@@ -7,16 +7,38 @@
 # the maximum diameter  wire that can be used to make that number of turns such that the turns do not take up more
 # than 300 degrees of the circumference of the toroid core. Use freqperturncoresize.py > filename.csv to create a
 # .csv file. This program takes quite a few minutes to run.
+#
+# Usage: python freqperturncoresize.py A B D
 
 import math
+import sys
 
-#A = 3.875
-A = 6
-B = 0
-#D = 0.237
-D = 0.24
+# For the Elecraft AX1 whip, A = 3.875, B = 0, D = 0.237
+# For the 6' whip, A = 6, B = 0, D = 0.24
 
 coreSizes = [12, 16, 25, 37, 50, 68, 80, 94, 106, 130, 157, 184, 200]
+
+def program_error():
+    print("Usage: python freqperturncoresize.py A B D")
+    print("  where A = whip length in feet")
+    print("        B = distance of coil from bottom in feet")
+    print("        D = whip diameter in inches")
+    sys.exit(1)
+
+def load_inputs():
+    try:
+        A = float(sys.argv[1])
+        B = float(sys.argv[2])
+        D = float(sys.argv[3])
+    except:
+        program_error()
+        sys.exit(1)
+    if len(sys.argv) != 4:
+        program_error()
+    if B >= D:
+        print("B cannot be greater to or equal to D")
+        sys.exit(1)
+    return A, B, D
 
 def max_AWG(coreSize, numTurns):
     maxTurns = {
@@ -92,8 +114,10 @@ def createHeader():
 
 # START OF MAIN PROGRAM
 
+A, B, D = load_inputs()
+
 print(f"A, {A}, Radiator Length (ft)")
-print(f"B, {B}, Loading Coil Distance from Bottom")
+print(f"B, {B}, Loading Coil Distance from Bottom (ft)")
 print(f"D, {D}, Radiator Diameter (in)")
 print(createHeader())
 
