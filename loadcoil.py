@@ -1,3 +1,9 @@
+# loadcoil.py
+# Dave Kingma
+#
+# This program assumes an Amitron -6 core material is used, and given a whip length of A (ft), a whip diameter
+# of D (in). It's a hodgepodge of code that will be integrated into a more complete set of code in the future.
+
 import math
 
 A = 3.875
@@ -22,7 +28,6 @@ def calcN(L, Al):
     N = round(100 * math.sqrt(L / Al))
     return(N)
 
-
 def find_max_AWG(coreSize, numTurns):
     maxTurns = {
         12:  {14: 0, 16: 0, 18: 0, 20: 0, 22: 1, 24: 3, 26: 5, 28: 8, 30: 11, 32: 15, 34: 20, 36: 26},
@@ -40,7 +45,7 @@ def find_max_AWG(coreSize, numTurns):
         200: {14: 53, 16: 67, 18: 86, 20: 108, 22: 137, 24: 172, 26: 217, 28: 270, 30: 338, 32: 418, 34: 529, 36: 658}
     }
     max_turns_for_core = maxTurns[coreSize]
-    for wire_size in range(14, 36, 2):
+    for wire_size in range(14, 36+1, 2):
         if max_turns_for_core[wire_size] >= numTurns:
             return wire_size
     return None
@@ -78,16 +83,3 @@ for i in range(int((stop-start)/step)+1):
     percent = B * 100 / A
     maxWireAWG = find_max_AWG(50, N)
     print(f"{percent:.0f}%, {B:.3f}, {L:.2f}, {N}, {maxWireAWG}")
-
-
-# print('Diameter, L(uH), N, Max AWG')
-# start = .05
-# stop = 3.0
-# step = 0.05
-# f = 14.0
-# for i in range(int((stop-start)/step)+1):
-#     D = start + i * step
-#     L = calcL(f, A, B, D)
-#     N = calcN(L, Al)
-#     maxWireAWG = find_max_AWG(50, N)
-#     print(f"{D:.2f}, {L:.2f}, {N}, {maxWireAWG}")
