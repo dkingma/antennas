@@ -49,7 +49,6 @@ def load_inputs():
                 match = 1
         if match != 1:
             program_error()
-    print(coreChoice)
     return A, B, D, coreChoice
 
 def max_AWG(coreSize, numTurns):
