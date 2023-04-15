@@ -19,26 +19,38 @@ import sys
 coreSizes = [12, 16, 25, 37, 50, 68, 80, 94, 106, 130, 157, 184, 200]
 
 def program_error():
-    print("Usage: python freqperturncoresize.py A B D")
+    print("Usage: python freqperturncoresize.py A B D Core")
     print("  where A = whip length in feet")
     print("        B = distance of coil from bottom in feet")
     print("        D = whip diameter in inches")
+    print("        Core = T-XXX from below list, or 'ALL' to create a table with all core sizes.")
+    print("  Core sizes available: T-12, T-16, T-25, T-37, T-50, T-68, T-80, T-94, T-106, T-130, T-157, T-184, T-200")
     sys.exit(1)
 
 def load_inputs():
+    coreSizes = [12, 16, 25, 37, 50, 68, 80, 94, 106, 130, 157, 184, 200]
     try:
         A = float(sys.argv[1])
         B = float(sys.argv[2])
         D = float(sys.argv[3])
+        coreChoice = sys.argv[4].upper()
     except:
         program_error()
         sys.exit(1)
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         program_error()
     if B >= D:
         print("B cannot be greater to or equal to D")
         sys.exit(1)
-    return A, B, D
+    if coreChoice != "ALL":
+        match = 0
+        for core in coreSizes:
+            if int(coreChoice[2:]) == core:
+                match = 1
+        if match != 1:
+            program_error()
+    print(coreChoice)
+    return A, B, D, coreChoice
 
 def max_AWG(coreSize, numTurns):
     maxTurns = {
@@ -64,7 +76,7 @@ def max_AWG(coreSize, numTurns):
 
 def max_Turns(coreSize):
     # assumes 36 AWG is the smallest wire used
-    maxTurnsforCore = {14: 26, 16: 29, 25: 52, 37: 98, 50: 151, 68: 187, 80: 255, 94: 290, 106: 293, 130: 406, 157: 499, 184: 496, 200: 658}
+    maxTurnsforCore = {12: 26, 16: 29, 25: 52, 37: 98, 50: 151, 68: 187, 80: 255, 94: 290, 106: 293, 130: 406, 157: 499, 184: 496, 200: 658}
     maxTurns = maxTurnsforCore[coreSize]
     return maxTurns
 
@@ -105,25 +117,39 @@ def turnstoFLmaxT(N, coreSize, A, B, D):
     maxT = max_AWG(coreSize, N)
     return resonantFrequency, targetL, maxT
 
-def createHeader():
+def createHeader(coreChoice):
     headerStr = '# Turns, '
-    for core in coreSizes:
-        addStr = f"T-{core} Freq (MHz), T-{core} L(uH), T-{core} Max AWG, "
+    if coreChoice == 'ALL':
+        for core in coreSizes:
+            addStr = f"T-{core} Freq (MHz), T-{core} L(uH), T-{core} Max AWG, "
+            headerStr = headerStr + addStr
+        return headerStr[:-2]
+    else:
+        addStr = f"Freq (MHz), L(uH), Max AWG"
         headerStr = headerStr + addStr
-    return headerStr[:-2]
+        return headerStr
 
 # START OF MAIN PROGRAM
 
-A, B, D = load_inputs()
+A, B, D, coreChoice = load_inputs()
 
 print(f"A, {A}, Radiator Length (ft)")
 print(f"B, {B}, Loading Coil Distance from Bottom (ft)")
 print(f"D, {D}, Radiator Diameter (in)")
-print(createHeader())
+print(f"Core: {coreChoice} (-6 Material)")
+print(createHeader(coreChoice))
 
-for N in range(1, max_Turns(200), 1):
-    printStr = f"{N}"
-    for core in coreSizes:
+if coreChoice == 'ALL':
+    for N in range(1, max_Turns(200)+1, 1):
+        printStr = f"{N}"
+        for core in coreSizes:
+            freq, L, maxT = turnstoFLmaxT(N, core, A, B, D)
+            printStr = printStr + f", {freq:.3f}, {L:.3f}, {maxT}"
+        print(printStr)
+else:
+    core = int(coreChoice[2:])
+    for N in range(1, max_Turns(core)+1, 1):
+        printStr = f"{N}"
         freq, L, maxT = turnstoFLmaxT(N, core, A, B, D)
         printStr = printStr + f", {freq:.3f}, {L:.3f}, {maxT}"
-    print(printStr)
+        print(printStr)
