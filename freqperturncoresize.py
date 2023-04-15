@@ -2,13 +2,13 @@
 # Dave Kingma
 #
 # This program assumes an Amitron -6 core material is used, and given a whip length of A (ft), a distance of the
-# loading coil from the bottom of the whip B, and a whip diameter of D (in). For every -6 core available and for
+# loading coil from the bottom of the whip B, and a whip diameter of D (in). For every -6 core available (if chosen) and for
 # every turn on the core, it calculates the resonant frequency (MHz), the inductance of the toroid L (uH), and
 # the maximum diameter  wire that can be used to make that number of turns such that the turns do not take up more
 # than 300 degrees of the circumference of the toroid core. Use freqperturncoresize.py > filename.csv to create a
-# .csv file. This program takes quite a few minutes to run.
+# .csv file. This program takes quite a few minutes to run if you choose all core sizes.
 #
-# Usage: python freqperturncoresize.py A B D
+# Usage: python freqperturncoresize.py A B D Core
 
 import math
 import sys
